@@ -17,7 +17,7 @@ module.exports = () => {
     },
     plugins: [
       new HtmlWebpackPlugin({
-        template: './client/index.html', // Path to the html template 
+        template: './index.html', // Path to the html template 
         title: 'JATE', // title
       }),
       new WebpackPwaManifest({
