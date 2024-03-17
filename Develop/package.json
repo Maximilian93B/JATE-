@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start:dev":"npm run dev",
-    "start": "npm run start",
+    "start": "node server.js",
     "start:prod":"node server.js",
     "server": " nodemon server.js",
     "build": "webpack --config webpack.config.js --mode production",
