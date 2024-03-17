@@ -8,8 +8,8 @@ module.exports = () => {
   return {
     mode: 'development',
     entry: {
-      main: './src/js/index.js', // Main entry point
-      install: './src/js/install.js' // Entry point for installation script
+      main: '../../client/src/js/index.js', // Main entry point
+      install: '../../client/src/js/install.js' // Entry point for installation script
     },
     output: {
       filename: '[name].bundle.js', // Output bundle file name
@@ -28,9 +28,9 @@ module.exports = () => {
         crossorigin: 'use-credentials', // credential policy 
         icons: [
           {
-            src: path.resolve('src/images/icon.png'), // path to icons. 
+            src: path.resolve('../../client/src/images/logo.png'), // path to icons. 
             sizes: [96, 128, 192, 256, 384, 512], // icons sizes 
-            destination: path.join('icons'), // dest folder for icons 
+            destination: path.join( 'assets','icons'), // dest folder for icons 
           },
         ],
       }),

@@ -27,4 +27,19 @@ warmStrategyCache({
 registerRoute(({ request }) => request.mode === 'navigate', pageCache);
 
 // TODO: Implement asset caching
-registerRoute();
+registerRoute(
+  // Match CSS and js and image files 
+  ({ request }) => request.destination === 'style' || request.destination === 'script' || request.destination === 'image',
+  new StaleWgileRevalidate({
+    cacheName: 'asset-cache',
+    plugins: [
+      new CacheableResponsePlugin({
+        statuses: [0,200],
+      }),
+      new ExpirationPlugin({
+        maxEntries: 60, // limit number of files to 60 
+        maxAgeSeconds: 30 * 24 * 60 * 60, // Cache for 30 days*
+      })
+    ]
+  })
+);
