@@ -68,5 +68,8 @@ yarn.lock
 .vscode
 *.xslx
 
-
+# dist file for webpack 
 dist/
+
+# source mapping 
+.map 

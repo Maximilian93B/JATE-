@@ -46,7 +46,7 @@ const tx = db.transaction('jate', 'readonly');
 const store = tx.objectStore('jate')  
 // Use GET method to fetch record 
 const request = store.getAll();
-// Wait for request to complete and store result
+// Wait for request to complete and store r esult
 const results = await request; 
 // Log fetched results for debug 
 console.log('🚀 - all data fetched from the database', results);

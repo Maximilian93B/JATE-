@@ -7,6 +7,7 @@ const { InjectManifest } = require('workbox-webpack-plugin');
 module.exports = () => {
   return {
     mode: 'development',
+    devtool: 'inline-source-map',
     entry: {
       main: './src/js/index.js', // Main entry point
       install: './src/js/install.js' // Entry point for installation script
@@ -36,7 +37,7 @@ module.exports = () => {
       }),
       // inject service worker 
       new InjectManifest({
-        swSrc: './src/src-sw.js', 
+        swSrc: './src-sw.js', 
         swDest: 'service-worker.js',
       }),
     ],

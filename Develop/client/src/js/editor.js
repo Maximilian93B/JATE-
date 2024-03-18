@@ -28,7 +28,10 @@ export default class {
     // Added error handling for debugging 
     getDb().then((data) => {
       console.info('Loaded data from IndexedDB, injecting into editor', data);
-      this.editor.setValue(data || localData || header);
+  
+      // declare data[0] and its properties
+      const content = data.length > 0 && 'content' in data[0] ? data[0].content : header;
+      this.editor.setValue(content);
     }).catch(errror => {
       console.error('Failed to load data from IndexedDb:',errror);
     });
