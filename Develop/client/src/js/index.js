@@ -23,20 +23,13 @@ if (typeof editor === 'undefined') {
 }
 
 if('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    const wb = new Workbox('/src-sw.js');
-
-    wb.addEventListener('activated', (event) => {
-      // Event for when the service worker has activated
-      console.log('Service worker activated');
-    });
-
-    wb.register().then(registration => {
-      console.log('ServiceWorker registration successful with scope: ', registration.scope);
-    }).catch(err => {
-      console.error('ServiceWorker registration failed: ', err);
+  window.addEventListener('load', () =>{
+    navigator.serviceWorker.register('../../src-sw.js').then(registration => {
+      console.log('ServiceWorker registration successful with scope:', registration.scope);
+    }, err=>{
+      console.log('Error with serviceWorker registration:', err);
     });
   });
-} else {
-  console.error('Service workers are not supported in this browser.');
 }
+
+
