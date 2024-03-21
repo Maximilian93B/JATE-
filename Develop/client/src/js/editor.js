@@ -2,17 +2,15 @@
 import { getDb, putDb } from './database';
 import { header } from './header';
 
-export default class {
+export default class Editor {
   constructor() {
-    const localData = localStorage.getItem('content');
-
-    // check if CodeMirror is loaded
+    // Check if CodeMirror is loaded
     if (typeof CodeMirror === 'undefined') {
       throw new Error('CodeMirror is not loaded');
     }
-
+    // Initialize CodeMirror with a placeholder value
     this.editor = CodeMirror(document.querySelector('#main'), {
-      value: header,
+      value: '', // Set an initial empty value; it will be updated asynchronously when the user inputs values into the editor 
       mode: 'javascript',
       theme: 'monokai',
       lineNumbers: true,
@@ -22,29 +20,41 @@ export default class {
       tabSize: 2,
     });
 
-    // When the editor is ready, set the value to whatever is stored in indexeddb.
-    // Fall back to localStorage if nothing is stored in indexeddb, and if neither is available,
-    // set the value to header.
-    // Added error handling for debugging 
-    getDb().then((data) => {
-      console.info('Loaded data from IndexedDB, injecting into editor', data);
-  
-      // declare data[0] and its properties
-      const content = data.length > 0 && 'content' in data[0] ? data[0].content : header;
+    // Load data from IndexedDB or fallbacks
+    this.loadData();
+
+    // Save changes to localStorage and IndexedDB
+    this.handleChanges();
+  }
+
+
+  // load data from DB 
+  async loadData() {
+    try {
+      const data = await getDb();
+      const content = data.length > 0 && 'content' in data[0] ? data[0].content : localStorage.getItem('content') || header;
       this.editor.setValue(content);
-    }).catch(errror => {
-      console.error('Failed to load data from IndexedDb:',errror);
-    });
+      console.info('Content loaded and set in editor.');
+    } catch (error) {
+      console.error('Failed to load data from IndexedDB:', error);
+      this.editor.setValue(localStorage.getItem('content') || header);
+    }
+  }
 
+// Handle changes in editor when adding new inputs 
+  handleChanges() {
     this.editor.on('change', () => {
-      localStorage.setItem('content', this.editor.getValue());
+      const currentContent = this.editor.getValue();
+      localStorage.setItem('content', currentContent); // Save current content to localStorage
     });
 
-    // Save the content of the editor when the editor itself is loses focus
+    // Handle on blue event listener to save new content to DB when input into editor 
     this.editor.on('blur', () => {
-      console.log('The editor has lost focus');
-      const currentConent = this.editor.getValue();
-      putDb(currentConent);
+      const currentContent = this.editor.getValue();
+      putDb({ content: currentContent }); 
+      console.log('Content saved to IndexedDB.');
     });
   }
 }
+
+

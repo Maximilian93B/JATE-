@@ -1,0 +1,22 @@
+{
+    "short_name": "JATE",
+    "name": "Just Another Text Editor",
+    "icons": [
+      {
+        "src": "./images/logo.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "./images/logo.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ],
+    "start_url": "/index.html",
+    "orientation": "portrait",
+    "display": "standalone",
+    "background_color": "#FFFFFF",
+    "theme_color": "#FFFFFF"
+  }
+  

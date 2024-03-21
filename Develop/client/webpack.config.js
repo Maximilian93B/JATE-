@@ -3,62 +3,92 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
 const path = require('path');
 const { InjectManifest } = require('workbox-webpack-plugin');
+const webpack = require('webpack'); // Ensure webpack is imported
 
 module.exports = () => {
   return {
     mode: 'development',
-    devtool: 'inline-source-map',
     entry: {
-      main: './src/js/index.js', // Main entry point
-      install: './src/js/install.js' // Entry point for installation script
+      main: './src/js/index.js',
+      install: './src/js/install.js',
     },
     output: {
-      filename: '[name].bundle.js', // Output bundle file name
-      path: path.resolve(__dirname, 'dist'), // Output path
+      filename: '[name].bundle.js', // Use contenthash for cache busting
+      path: path.resolve(__dirname, 'dist'),
+      clean: true, // Clean the output directory on every build
     },
     plugins: [
       new HtmlWebpackPlugin({
-        template: './index.html', // Path to the html template 
-        title: 'JATE', // title
+        template: './src/index.html',
+        title: 'JATE',
       }),
       new WebpackPwaManifest({
-        name: 'Just Another Text Editor',
+        Name: 'Just Another Text Editor',
         short_name: 'JATE',
         description: 'A text editor that goes where you go!',
         background_color: '#ffffff',
-        crossorigin: 'use-credentials', // credential policy 
+        crossorigin: 'use-credentials',
         icons: [
           {
-            src: path.resolve('./src/images/logo.png'), // path to icons. 
-            sizes: [96, 128, 192, 256, 384, 512], // icons sizes 
-            destination: path.join( 'assets','icons'), // dest folder for icons 
+            src: path.resolve('./src/images/logo.png'), // Ensure this points to the icon file
+            sizes: [96, 128, 192, 256, 384, 512], // Define sizes as needed
+            destination: path.join('icons'),
           },
         ],
+        start_url: '/'
       }),
-      // inject service worker 
+      
       new InjectManifest({
-        swSrc: './src-sw.js', 
+        swSrc: './src-sw.js',
         swDest: 'service-worker.js',
+      }),
+      //  ignore modules not intended for browser environments
+      new webpack.IgnorePlugin({
+        resourceRegExp: /^\.\/locale$/,
+        contextRegExp: /moment$/,
       }),
     ],
     module: {
       rules: [
         {
-          test: /\.css$/, // match all css files 
-          use: ['style-loader', 'css-loader'], // use loaders 
+          test: /\.css$/,
+          use: ['style-loader', 'css-loader'],
         },
         {
-          test: /\.js$/, // match all js files es
-          exclude: /node_modules/, // no node_modules please 
+          test: /\.js$/,
+          exclude: /node_modules/,
           use: {
-            loader: 'babel-loader', // use babel loaders 
+            loader: 'babel-loader',
             options: {
-              presets: ['@babel/preset-env'], 
-              plugins: ['@babel/plugin-transform-runtime'], // async await plugin
+              presets: ['@babel/preset-env'],
+              plugins: ['@babel/plugin-transform-runtime'],
             },
           },
         },
       ],
+    },
+    // Provide fallbacks for Node.js modules not available in the browser
+    resolve: {
+      fallback: {
+        "worker_threads": false, // Fallback for worker_threads
+        "child_process": false, // Add fallbacks as needed
+      },
+    },
+    // Development server configuration
+    devServer: {
+      static: path.join(__dirname, 'dist'),
+      compress: true,
+      port: 9000,
+      hot: true,
+      open: true,
+      client: {
+        overlay: true,
+      },
+    },
+    // Performance hints
+    performance: {
+      maxEntrypointSize: 512000,
+      maxAssetSize: 512000,
     },
   };
 };
