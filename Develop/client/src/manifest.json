@@ -3,7 +3,7 @@
     "name": "Just Another Text Editor",
     "icons": [
       {
-        "src": "./images/logo.png",
+        "src": "./src/images/logo.png",
         "sizes": "192x192",
         "type": "image/png"
       },

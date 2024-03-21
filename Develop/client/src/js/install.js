@@ -10,10 +10,8 @@ let deferredPrompt
 
 // TODO: Add an event handler to the `beforeinstallprompt` event
 window.addEventListener('beforeinstallprompt', (event) => {
-    
     event.preventDefault();
     deferredPrompt = event; 
-
     //Update UI to notify the usr they add to home screen 
     butInstall.style.visibility='visible';
 
@@ -24,8 +22,7 @@ window.addEventListener('beforeinstallprompt', (event) => {
 butInstall.addEventListener('click', async () => {
     if (deferredPrompt) {
         // Hide the app provided install promotion.
-        butInstall.classList.toggle = 'hidden', true;
-
+        butInstall.style.visibility = 'hidden';
         // Show the install prompt.
         deferredPrompt.prompt();
 

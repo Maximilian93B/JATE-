@@ -1,10 +1,10 @@
 // Import Plugins and utils
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const WebpackPwaManifest = require('webpack-pwa-manifest');
+//const WebpackPwaManifest = require('webpack-pwa-manifest');
 const path = require('path');
 const { InjectManifest } = require('workbox-webpack-plugin');
 const webpack = require('webpack'); // Ensure webpack is imported
-
+const CopyPlugin = require('copy-webpack-plugin');
 module.exports = () => {
   return {
     mode: 'development',
@@ -19,25 +19,32 @@ module.exports = () => {
     },
     plugins: [
       new HtmlWebpackPlugin({
-        template: './src/index.html',
-        title: 'JATE',
+        template: './src/index.html', // Path to your template file
+        title: 'JATE', // The title to use for the generated HTML document
       }),
+      new CopyPlugin({
+        patterns:[
+          {from: "./src/manifest.json", to: "manifest.json"},
+        ]
+      }),
+      /*
       new WebpackPwaManifest({
-        Name: 'Just Another Text Editor',
-        short_name: 'JATE',
-        description: 'A text editor that goes where you go!',
-        background_color: '#ffffff',
-        crossorigin: 'use-credentials',
+        filename:"manifest.[hash].json", 
+        name: "Just Another Text Editor",
+        short_name: "JATE",
+        description: "A text editor that goes where you go!",
+        background_color: "#ffffff",
+        crossorigin: "use-credentials",
         icons: [
           {
-            src: path.resolve('./src/images/logo.png'), // Ensure this points to the icon file
-            sizes: [96, 128, 192, 256, 384, 512], // Define sizes as needed
-            destination: path.join('icons'),
+            src: path.resolve('./src/images/logo.png'),
+            sizes: [96, 128, 192, 256, 384, 512],
+            destination: 'icons',
           },
         ],
-        start_url: '/'
+        start_url: '/',
       }),
-      
+      */
       new InjectManifest({
         swSrc: './src-sw.js',
         swDest: 'service-worker.js',
@@ -83,6 +90,9 @@ module.exports = () => {
       open: true,
       client: {
         overlay: true,
+      },
+      proxy: {
+        '/api': 'http://localhost:3000', // Proxy API requests to the backend server
       },
     },
     // Performance hints
