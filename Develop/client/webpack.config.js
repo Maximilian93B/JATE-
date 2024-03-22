@@ -1,16 +1,16 @@
 // Import Plugins and utils
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-//const WebpackPwaManifest = require('webpack-pwa-manifest');
+const WebpackPwaManifest = require('webpack-pwa-manifest');
 const path = require('path');
 const { InjectManifest } = require('workbox-webpack-plugin');
 const webpack = require('webpack'); // Ensure webpack is imported
-const CopyPlugin = require('copy-webpack-plugin');
+
 module.exports = () => {
   return {
     mode: 'development',
     entry: {
-      main: './src/js/index.js',
-      install: './src/js/install.js',
+      main: '/src/js/index.js',
+      install: '/src/js/install.js',
     },
     output: {
       filename: '[name].bundle.js', // Use contenthash for cache busting
@@ -19,17 +19,10 @@ module.exports = () => {
     },
     plugins: [
       new HtmlWebpackPlugin({
-        template: './src/index.html', // Path to your template file
+        template: './index.html', // Path to your template file
         title: 'JATE', // The title to use for the generated HTML document
       }),
-      new CopyPlugin({
-        patterns:[
-          {from: "./src/manifest.json", to: "manifest.json"},
-        ]
-      }),
-      /*
       new WebpackPwaManifest({
-        filename:"manifest.[hash].json", 
         name: "Just Another Text Editor",
         short_name: "JATE",
         description: "A text editor that goes where you go!",
@@ -44,25 +37,19 @@ module.exports = () => {
         ],
         start_url: '/',
       }),
-      */
       new InjectManifest({
         swSrc: './src-sw.js',
         swDest: 'service-worker.js',
-      }),
-      //  ignore modules not intended for browser environments
-      new webpack.IgnorePlugin({
-        resourceRegExp: /^\.\/locale$/,
-        contextRegExp: /moment$/,
       }),
     ],
     module: {
       rules: [
         {
-          test: /\.css$/,
+          test: /\.css$/i,
           use: ['style-loader', 'css-loader'],
         },
         {
-          test: /\.js$/,
+          test: /\.m?js$/,
           exclude: /node_modules/,
           use: {
             loader: 'babel-loader',
@@ -74,27 +61,21 @@ module.exports = () => {
         },
       ],
     },
-    // Provide fallbacks for Node.js modules not available in the browser
-    resolve: {
-      fallback: {
-        "worker_threads": false, // Fallback for worker_threads
-        "child_process": false, // Add fallbacks as needed
-      },
-    },
+  
     // Development server configuration
     devServer: {
       static: path.join(__dirname, 'dist'),
-      compress: true,
-      port: 9000,
+     // compress: true,
+     // port: 9000,
       hot: true,
-      open: true,
-      client: {
-        overlay: true,
+     // open: true,
+     // client: {
+       // overlay: true,
       },
-      proxy: {
+     /*proxy: {
         '/api': 'http://localhost:3000', // Proxy API requests to the backend server
       },
-    },
+    },*/
     // Performance hints
     performance: {
       maxEntrypointSize: 512000,

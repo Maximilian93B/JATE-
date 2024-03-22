@@ -3,8 +3,7 @@ const { CacheFirst } = require('workbox-strategies');
 const { registerRoute } = require('workbox-routing');
 const { CacheableResponsePlugin } = require('workbox-cacheable-response');
 const { ExpirationPlugin } = require('workbox-expiration');
-const { precacheAndRoute } = require('workbox-precaching/precacheAndRoute');
-const { StaleWhileRevalidate }= require('workbox-strategies');
+
 
 precacheAndRoute(self.__WB_MANIFEST);
 
@@ -25,22 +24,47 @@ warmStrategyCache({
   strategy: pageCache,
 });
 
+
+
 registerRoute(({ request }) => request.mode === 'navigate', pageCache);
 
-// TODO: Implement asset caching
+// Cache CSS + JS
 registerRoute(
-  // Match CSS and js and image files 
-  ({ request }) => request.destination === 'style' || request.destination === 'script' || request.destination === 'image',
+  // Match CSS and JavaScript files
+  ({request}) => request.destination === 'style' || request.destination === 'script',
+
   new StaleWhileRevalidate({
-    cacheName: 'images',
-    plugins: [
+    cacheName: 'css-js-cache',
+    plugins:[
       new CacheableResponsePlugin({
-        statuses: [0,200],
+        statuses: [0,200], // cache successful responses
       }),
       new ExpirationPlugin({
-        maxEntries: 60, // limit number of files to 60 
-        maxAgeSeconds: 30 * 24 * 60 * 60, // Cache for 30 days*
+        maxEntries: 50, // Number of entires 
+        maxAgeSeconds: 30 * 24 * 60 * 60, // Cache for 30 days
       })
     ]
   })
 );
+
+// Cache Images 
+registerRoute(
+   // Match image files
+   ({request}) => request.destination === 'image',
+   
+   CacheFirst({
+    cacheName: 'image-cache',
+    plugins: [
+      new CacheableResponsePlugin({
+        statuses:[0,200],
+      }),
+      new ExpirationPlugin({
+        maxEntries: 60, // 60 entires in the cache
+        maxAgeSeconds:60 * 24 * 60 * 60, // Cache for 60 days
+      }),
+    ],
+   })
+);
+
+// TODO: Implement asset caching
+registerRoute();
